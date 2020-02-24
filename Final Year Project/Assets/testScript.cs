@@ -5,9 +5,10 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MainMenu : MonoBehaviour
+public class testScript : MonoBehaviour
 {
-    public void LoadMap ()
+    // Start is called before the first frame update
+    void Start()
     {
         //Path to map data
         string path = "Assets/MapData/building.txt";
@@ -16,7 +17,7 @@ public class MainMenu : MonoBehaviour
         //Read file
         var buildingsData = File.ReadAllLines(path);
 
-        for(int i = 0; i < buildingsData.Length; i++)
+        for (int i = 0; i < buildingsData.Length; i++)
         {
             Building building = new Building();
             int extraLines = 0;
@@ -37,7 +38,7 @@ public class MainMenu : MonoBehaviour
             //building.Vertices.Add(new Vector3(Int32.Parse(lineOfText[3]), Int32.Parse(lineOfText[4]), building.BuildingHeight));
 
             //Checking if next lines are part of same building, if they are, adding to building object.
-            for(int j=i;j<buildingsData.Length;j++)
+            for (int j = i; j < buildingsData.Length; j++)
             {
                 var nextLine = buildingsData[j].Split(' ');
 
@@ -45,7 +46,7 @@ public class MainMenu : MonoBehaviour
                 if (nextLine[6] == building.BuildingNumber.ToString())
                 {
                     //Adding points if they're a part of the building
-                    if (!building.Vertices.Contains(new Vector3(Int32.Parse(nextLine[1]), 0,  Int32.Parse(nextLine[2]))))
+                    if (!building.Vertices.Contains(new Vector3(Int32.Parse(nextLine[1]), 0, Int32.Parse(nextLine[2]))))
                     {
                         building.Vertices.Add(new Vector3(Int32.Parse(nextLine[1]), 0, Int32.Parse(nextLine[2])));
                         //building.Vertices.Add(new Vector3(Int32.Parse(nextLine[1]), Int32.Parse(nextLine[2]), building.BuildingHeight));
@@ -66,18 +67,18 @@ public class MainMenu : MonoBehaviour
                     break;
                 }
 
-                
+
             }
             listOfBuildings.Add(building);
             i = i + (extraLines - 1);
         }
 
-        SceneManager.LoadScene(1);
+        //SceneManager.LoadScene(1);
 
-        var material = new Material(Shader.Find("Standard"));
+        var material = new Material(Shader.Find("Custom/noBackFaceCulling"));
         foreach (var building in listOfBuildings)
         {
-            for (int i = 0; i < building.Vertices.Count - 1; i++)
+            for (int i = 0; i <= building.Vertices.Count - 1; i++)
             {
                 GameObject obj = new GameObject("buildingB" + building.BuildingNumber + "F" + i);
                 MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
@@ -89,7 +90,7 @@ public class MainMenu : MonoBehaviour
 
                 Vector3[] vertices = new Vector3[4];
 
-                if (i == building.Vertices.Count)
+                if (i == (building.Vertices.Count - 1))
                 {
                     vertices[0] = new Vector3(building.Vertices[i].x, building.Vertices[i].y, building.Vertices[i].z);
                     vertices[1] = new Vector3(building.Vertices[i].x, building.BuildingHeight, building.Vertices[i].z);
@@ -130,7 +131,7 @@ public class MainMenu : MonoBehaviour
                 };
                 mesh.uv = uv;
 
-
+                mesh.RecalculateBounds();
                 mesh.RecalculateNormals();
                 meshFilter.mesh = mesh;
 
@@ -138,5 +139,11 @@ public class MainMenu : MonoBehaviour
         }
 
         //SceneManager.LoadScene(1);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
     }
 }
