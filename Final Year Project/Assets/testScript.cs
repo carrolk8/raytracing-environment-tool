@@ -75,13 +75,15 @@ public class testScript : MonoBehaviour
 
         //SceneManager.LoadScene(1);
 
-        var material = new Material(Shader.Find("Custom/noBackFaceCulling"));
+        //var material = new Material(Shader.Find("Custom/noBackFaceCulling"));
+        var material = new Material(Shader.Find("Standard"));
         foreach (var building in listOfBuildings)
         {
             for (int i = 0; i <= building.Vertices.Count - 1; i++)
             {
                 GameObject obj = new GameObject("buildingB" + building.BuildingNumber + "F" + i);
                 MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
+                MeshCollider meshCollider = obj.AddComponent<MeshCollider>();
                 meshRenderer.sharedMaterial = material;
 
                 MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
@@ -134,16 +136,61 @@ public class testScript : MonoBehaviour
                 mesh.RecalculateBounds();
                 mesh.RecalculateNormals();
                 meshFilter.mesh = mesh;
-
+                meshCollider.sharedMesh = mesh;
             }
+            renderRoof(building);
         }
-
         //SceneManager.LoadScene(1);
     }
 
-    // Update is called once per frame
-    void Update()
+    void renderRoof(Building building)
     {
+        var material = new Material(Shader.Find("Standard"));
+        GameObject obj = new GameObject("buildingB" + building.BuildingNumber + "Roof");
+        MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
+        MeshCollider meshCollider = obj.AddComponent<MeshCollider>();
+        meshRenderer.sharedMaterial = material;
 
+        MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
+
+        Mesh mesh = new Mesh();
+        List<Vector2> vertices2D = new List<Vector2>();
+        foreach(var vert in building.Vertices)
+        {
+            vertices2D.Add(new Vector2(vert.x, vert.z));
+        }
+
+        Vector3[] vertices = new Vector3[vertices2D.Count];
+        for(int i = 0; i < vertices2D.Count; i++)
+        {
+            vertices[i] = new Vector3(vertices2D[i].x, building.BuildingHeight, vertices2D[i].y);
+        }
+
+        mesh.vertices = vertices;
+
+        Triangulator triangulator = new Triangulator(vertices2D.ToArray());
+        int[] triangles = triangulator.Triangulate();
+        mesh.triangles = triangles;
+
+        Vector3[] normals = new Vector3[vertices.Length];
+        for(int i = 0; i < vertices.Length; i++)
+        {
+            normals[i] = -Vector3.forward;
+        }
+        mesh.normals = normals;
+
+        //Vector2[] uv = new Vector2[4]
+        //{
+        //                new Vector2(0, 0),
+        //                new Vector2(0, 1),
+        //                new Vector2(1, 0),
+        //                new Vector2(1, 1)
+        //};
+        //mesh.uv = uv;
+
+        mesh.RecalculateBounds();
+        mesh.RecalculateNormals();
+        meshFilter.mesh = mesh;
+        meshCollider.sharedMesh = mesh;
     }
 }
