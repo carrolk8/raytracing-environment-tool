@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+
+//This is taken from the Unity3D Wiki
+//http://wiki.unity3d.com/index.php?title=Triangulator&oldid=20279
+
 public class Triangulator
 {
     private List<Vector2> m_points = new List<Vector2>();
