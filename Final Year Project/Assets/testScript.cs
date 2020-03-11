@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class testScript : MonoBehaviour
 {
+
     // Start is called before the first frame update
     void Start()
     {
@@ -139,7 +140,11 @@ public class testScript : MonoBehaviour
                 meshCollider.sharedMesh = mesh;
             }
             renderRoof(building);
+
         }
+        RouteLoader routeLoader = new RouteLoader();
+        string path2 = "Assets/MapData/route2.txt";
+        var route = routeLoader.loadRoute(path2);
         //SceneManager.LoadScene(1);
     }
 
