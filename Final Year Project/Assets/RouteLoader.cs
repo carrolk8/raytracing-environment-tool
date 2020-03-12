@@ -14,7 +14,7 @@ public class RouteLoader : MonoBehaviour
 
         for(int i = 0; i < routeData.Length; i++)
         {
-            var lineOfText = routeData[i].Split(' ');
+            var lineOfText = routeData[i].Split('\t');
             routeDataList.Add(new Vector3(Int32.Parse(lineOfText[1]), 0, Int32.Parse(lineOfText[2])));
         }
 
