@@ -7,8 +7,18 @@ using UnityEngine.SceneManagement;
 
 public class testScript : MonoBehaviour
 {
+    private RouteLoader routeLoader = new RouteLoader();
+    private RayLoader rayLoader = new RayLoader();
+    private PointRenderer pointRenderer = new PointRenderer();
+    private GameObject obj;
+    private GameObject nestedObj;
+    private List<GameObject> listOfPoints = new List<GameObject>();
+    private List<RayGroup> rays = new List<RayGroup>();
+    private List<Vector3> route;
+    private Vector3 target;
+    private int currentElement = 1;
+    private bool mapExtendedFeatures = false;
 
-    // Start is called before the first frame update
     void Start()
     {
         //Path to map data
@@ -18,7 +28,12 @@ public class testScript : MonoBehaviour
         //Read file
         var buildingsData = File.ReadAllLines(path);
 
-        for (int i = 0; i < buildingsData.Length; i++)
+        if(buildingsData[0] == "1") //Determining if a map will have associated data
+        {
+            mapExtendedFeatures = true;
+        }
+
+        for (int i = 1; i < buildingsData.Length; i++)
         {
             Building building = new Building();
             int extraLines = 0;
@@ -27,16 +42,14 @@ public class testScript : MonoBehaviour
             var lineOfText = buildingsData[i].Split(' ');
 
             //Add Building Height and Number to Building object
-            building.BuildingHeight = Int32.Parse(lineOfText[5]);
-            building.BuildingNumber = Int32.Parse(lineOfText[6]);
+            building.BuildingHeight = float.Parse(lineOfText[4]);
+            building.BuildingNumber = Int32.Parse(lineOfText[5]);
 
             //Add in first point and it's counterpart at building height
-            building.Vertices.Add(new Vector3(Int32.Parse(lineOfText[1]), 0, Int32.Parse(lineOfText[2])));
-            //building.Vertices.Add(new Vector3(Int32.Parse(lineOfText[1]), Int32.Parse(lineOfText[2]), building.BuildingHeight));
+            building.Vertices.Add(new Vector3(float.Parse(lineOfText[0]), 0, float.Parse(lineOfText[1])));
 
             //Add in second point and it's counterpart at building height
-            building.Vertices.Add(new Vector3(Int32.Parse(lineOfText[3]), 0, Int32.Parse(lineOfText[4])));
-            //building.Vertices.Add(new Vector3(Int32.Parse(lineOfText[3]), Int32.Parse(lineOfText[4]), building.BuildingHeight));
+            building.Vertices.Add(new Vector3(float.Parse(lineOfText[2]), 0, float.Parse(lineOfText[3])));
 
             //Checking if next lines are part of same building, if they are, adding to building object.
             for (int j = i; j < buildingsData.Length; j++)
@@ -44,19 +57,17 @@ public class testScript : MonoBehaviour
                 var nextLine = buildingsData[j].Split(' ');
 
                 //Checking if points already exists in building object
-                if (nextLine[6] == building.BuildingNumber.ToString())
+                if (nextLine[5] == building.BuildingNumber.ToString())
                 {
                     //Adding points if they're a part of the building
-                    if (!building.Vertices.Contains(new Vector3(Int32.Parse(nextLine[1]), 0, Int32.Parse(nextLine[2]))))
+                    if (!building.Vertices.Contains(new Vector3(float.Parse(nextLine[0]), 0, float.Parse(nextLine[1]))))
                     {
-                        building.Vertices.Add(new Vector3(Int32.Parse(nextLine[1]), 0, Int32.Parse(nextLine[2])));
-                        //building.Vertices.Add(new Vector3(Int32.Parse(nextLine[1]), Int32.Parse(nextLine[2]), building.BuildingHeight));
+                        building.Vertices.Add(new Vector3(float.Parse(nextLine[0]), 0, float.Parse(nextLine[1])));
                     }
 
-                    if (!building.Vertices.Contains(new Vector3(Int32.Parse(nextLine[3]), 0, Int32.Parse(nextLine[4]))))
+                    if (!building.Vertices.Contains(new Vector3(float.Parse(nextLine[2]), 0, float.Parse(nextLine[3]))))
                     {
-                        building.Vertices.Add(new Vector3(Int32.Parse(nextLine[3]), 0, Int32.Parse(nextLine[4])));
-                        //building.Vertices.Add(new Vector3(Int32.Parse(nextLine[3]), Int32.Parse(nextLine[4]), building.BuildingHeight));
+                        building.Vertices.Add(new Vector3(float.Parse(nextLine[2]), 0, float.Parse(nextLine[3])));
                     }
 
                     //Account for extra lines read
@@ -74,9 +85,6 @@ public class testScript : MonoBehaviour
             i = i + (extraLines - 1);
         }
 
-        //SceneManager.LoadScene(1);
-
-        //var material = new Material(Shader.Find("Custom/noBackFaceCulling"));
         var material = new Material(Shader.Find("Standard"));
         foreach (var building in listOfBuildings)
         {
@@ -140,12 +148,43 @@ public class testScript : MonoBehaviour
                 meshCollider.sharedMesh = mesh;
             }
             renderRoof(building);
-
         }
-        RouteLoader routeLoader = new RouteLoader();
-        string path2 = "Assets/MapData/route2.txt";
-        var route = routeLoader.loadRoute(path2);
-        //SceneManager.LoadScene(1);
+
+        if (mapExtendedFeatures)
+        {
+            string pathForRoute = "Assets/MapData/route.txt";
+            route = routeLoader.loadRoute(pathForRoute);
+
+            string pathForRays = "Assets/MapData/rays.txt";
+            rays = rayLoader.loadRays(pathForRays);
+
+
+
+            obj = GameObject.Find("FPSController");
+            nestedObj = GameObject.Find("FirstPersonCharacter");
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (Input.GetKeyDown(KeyCode.F) && mapExtendedFeatures)
+        {
+            obj.GetComponent<CharacterController>().enabled = false;
+
+            obj.transform.position = target;
+            nestedObj.transform.position = target;
+
+            obj.GetComponent<CharacterController>().enabled = true;
+
+            pointRenderer.RenderPoints(rays[currentElement], listOfPoints);
+            NextElement();
+        }
+    }
+
+    public void NextElement()
+    {
+        target = route[currentElement + 1];
+        currentElement++;
     }
 
     void renderRoof(Building building)
