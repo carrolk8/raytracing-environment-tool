@@ -5,13 +5,14 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class testScript : MonoBehaviour
+public class EnvironmentBuilder : MonoBehaviour
 {
     private RouteLoader routeLoader = new RouteLoader();
     private RayLoader rayLoader = new RayLoader();
     private PointRenderer pointRenderer = new PointRenderer();
     private GameObject obj;
     private GameObject nestedObj;
+    private GameObject textObj;
     private List<GameObject> listOfPoints = new List<GameObject>();
     private List<RayGroup> rays = new List<RayGroup>();
     private List<Vector3> route;
@@ -22,7 +23,7 @@ public class testScript : MonoBehaviour
     void Start()
     {
         //Path to map data
-        string path = "Assets/MapData/building.txt";
+        string path = "Assets/MapData/munich.txt";
         List<Building> listOfBuildings = new List<Building>();
 
         //Read file
@@ -147,47 +148,73 @@ public class testScript : MonoBehaviour
                 meshFilter.mesh = mesh;
                 meshCollider.sharedMesh = mesh;
             }
-            renderRoof(building);
+            RenderRoof(building);
         }
 
         if (mapExtendedFeatures)
         {
             string pathForRoute = "Assets/MapData/route.txt";
-            route = routeLoader.loadRoute(pathForRoute);
+            route = routeLoader.LoadRoute(pathForRoute);
 
             string pathForRays = "Assets/MapData/rays.txt";
-            rays = rayLoader.loadRays(pathForRays);
-
-
+            rays = rayLoader.LoadRays(pathForRays);
 
             obj = GameObject.Find("FPSController");
             nestedObj = GameObject.Find("FirstPersonCharacter");
+            textObj = GameObject.Find("Text");
+
+
         }
     }
 
     private void LateUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.F) && mapExtendedFeatures)
+        if (Input.GetKey(KeyCode.F) && mapExtendedFeatures)
         {
-            obj.GetComponent<CharacterController>().enabled = false;
+            if(currentElement <= route.Count) {
+                obj.GetComponent<CharacterController>().enabled = false;
 
-            obj.transform.position = target;
-            nestedObj.transform.position = target;
+                obj.transform.position = target;
+                nestedObj.transform.position = target;
 
-            obj.GetComponent<CharacterController>().enabled = true;
-
-            pointRenderer.RenderPoints(rays[currentElement], listOfPoints);
+                obj.GetComponent<CharacterController>().enabled = true;
+                pointRenderer.RenderPoints(rays[currentElement], listOfPoints);
+                textObj.GetComponent<TextBox>().text = "F to advance through route. \nC to reverse through route. \nCurrent route index: " + currentElement + "/" + (route.Count - 1);
+            }
             NextElement();
+        }
+
+        if (Input.GetKey(KeyCode.C) && mapExtendedFeatures)
+        {
+            if (currentElement > 0)
+            {
+                obj.GetComponent<CharacterController>().enabled = false;
+
+                obj.transform.position = target;
+                nestedObj.transform.position = target;
+
+                obj.GetComponent<CharacterController>().enabled = true;
+
+                pointRenderer.RenderPoints(rays[currentElement], listOfPoints);
+                textObj.GetComponent<TextBox>().text = "F to advance through route. \nC to reverse through route. \nCurrent route index: " + currentElement + "/" + (route.Count - 1);
+            }
+            PreviousElement();
         }
     }
 
     public void NextElement()
     {
-        target = route[currentElement + 1];
+        target = new Vector3(route[currentElement + 1].x, 1, route[currentElement + 1].z);
         currentElement++;
     }
 
-    void renderRoof(Building building)
+    public void PreviousElement()
+    {
+        target = new Vector3(route[currentElement - 1].x, 1, route[currentElement - 1].z);
+        currentElement--;
+    }
+
+    void RenderRoof(Building building)
     {
         var material = new Material(Shader.Find("Standard"));
         GameObject obj = new GameObject("buildingB" + building.BuildingNumber + "Roof");

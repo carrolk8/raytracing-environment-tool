@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class RouteLoader : MonoBehaviour
 {
-    public List<Vector3> loadRoute(string path)
+    public List<Vector3> LoadRoute(string path)
     {
         var routeData = File.ReadAllLines(path);
         var routeDataList = new List<Vector3>();

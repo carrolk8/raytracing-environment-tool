@@ -6,12 +6,11 @@ using UnityEngine;
 
 public class RayLoader : MonoBehaviour
 {
-    public List<RayGroup> loadRays(string path)
+    public List<RayGroup> LoadRays(string path)
     {
         var rayData = File.ReadAllLines(path);
         var rayDataList = new List<RayGroup>();
         
-
         for (int i = 0; i < rayData.Length; i++)
         {
             RayGroup rg = new RayGroup();
@@ -37,8 +36,8 @@ public class RayLoader : MonoBehaviour
         }
 
         GameObject transmitter = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        transmitter.transform.position = rayDataList[0].Rays[0].StartLocation;
-        transmitter.transform.localScale = new Vector3(3f, 1000f, 3f);
+        transmitter.transform.localScale = new Vector3(3f, 250f, 3f);
+        transmitter.transform.position = new Vector3(rayDataList[0].Rays[0].StartLocation.x, 250, rayDataList[0].Rays[0].StartLocation.z);
         transmitter.GetComponent<Renderer>().material.color = Color.yellow;
 
         return rayDataList;
