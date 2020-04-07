@@ -179,7 +179,8 @@ public class EnvironmentBuilder : MonoBehaviour
 
                 obj.GetComponent<CharacterController>().enabled = true;
                 pointRenderer.RenderPoints(rays[currentElement], listOfPoints);
-                textObj.GetComponent<TextBox>().text = "F to advance through route. \nC to reverse through route. \nCurrent route index: " + currentElement + "/" + (route.Count - 1);
+                textObj.GetComponent<TextBox>().text = "F to advance through route. \nC to reverse through route. \nCurrent route index: " + currentElement + "/" + (route.Count - 1)
+                    + "\nRays at current index: " + rays[currentElement].GroupSize;
             }
             NextElement();
         }
@@ -196,7 +197,8 @@ public class EnvironmentBuilder : MonoBehaviour
                 obj.GetComponent<CharacterController>().enabled = true;
 
                 pointRenderer.RenderPoints(rays[currentElement], listOfPoints);
-                textObj.GetComponent<TextBox>().text = "F to advance through route. \nC to reverse through route. \nCurrent route index: " + currentElement + "/" + (route.Count - 1);
+                textObj.GetComponent<TextBox>().text = "F to advance through route. \nC to reverse through route. \nCurrent route index: " + currentElement + "/" + (route.Count - 1)
+                    + "\nRays at current index: " + rays[currentElement].GroupSize;
             }
             PreviousElement();
         }
