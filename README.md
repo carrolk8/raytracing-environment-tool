@@ -102,3 +102,26 @@ An example of a route file is detailed below
 9	529	742
 10	515	748
 ````
+
+
+#### Ray File
+
+TODO: ADD THIS SECTION
+
+
+### Using own Files
+
+To use your own data, you can change the path to each file in the EnvironmentBuilder.cs class.
+
+The path for the environment file is located at the top of the class, simply called path. Place your file into the MapData folder in the project and change the path to reflect the name of your file.
+
+If your data has associated route and ray data, repeat the process, but instead change the pathForRoute and pathForRays variables, which are located at the end of the start() function. These can easily be found by pressing CTRL + F and looking for either of the variable names or the 'if(mapExtendedFeatures)' line.
+
+### Running the Tool
+
+The tool can be run by either building the project, under 
+````
+File -> Build Settings -> Build and Run
+````
+
+Or, you can press the play button at the top of the screen. This is usually used for testing, and does not run as well as building the project, but will allow you to go into scene mode, by pressing ESC and clicking on the scene tab. This provides the user with a few tools to help validate the environment, such as being able to fly above and look at the entire environment.
