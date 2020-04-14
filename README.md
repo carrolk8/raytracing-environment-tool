@@ -75,3 +75,30 @@ The example below describes the first 3 blocks in an environment with associated
 
 
 #### Route File
+
+The format for the route is simple, each line contains the index and an x and z coordinate.
+
+The only thing to point out here is that **each value is seperated by _tabs_**. If your file is seperated by spaces, it may actually be quicker to change the RouteLoader.cs file to split each line based on whitespace, rather than tabs.
+
+For example
+````
+var lineOfText = routeData[i].Split('\t');
+
+to 
+
+var lineOfText = routeData[i].Split(' ');
+````
+
+An example of a route file is detailed below
+````
+1	613	687
+2	607	703
+3	596	708
+4	586	713
+5	576	719
+6	564	724
+7	553	730
+8	540	736
+9	529	742
+10	515	748
+````
