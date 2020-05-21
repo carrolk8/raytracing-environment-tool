@@ -106,7 +106,22 @@ An example of a route file is detailed below
 
 #### Ray File
 
-TODO: ADD THIS SECTION
+The format for this file is quite complex. Each line will be of one two types, either metadata describing how many rays there are in the next ray group, or describing a ray. An example is given below.
+
+````
+1 5 0 0 0 0 0 0 0 0 0 0 0 0 0
+4 1281.36 1381.27 613 687 1043 1619 740 807 -7.80242e-012 1.85648e-008 -7.37236e-012 1.75416e-008 1.28633e-009 -3.06066e-006
+4 1281.36 1381.27 613 687 981 1464 740 807 -1.51196e-008 -3.16261e-008 -1.42863e-008 -2.98829e-008 2.1454e-006 4.4876e-006
+4 1281.36 1381.27 613 687 951 1386 740 807 1.56177e-008 8.39786e-009 1.47569e-008 7.93499e-009 -2.09517e-006 -1.1266e-006
+4 1281.36 1381.27 613 687 939 1363 740 807 2.48145e-008 -8.34011e-009 2.34468e-008 -7.88042e-009 -3.28961e-006 1.10563e-006
+4 1281.36 1381.27 613 687 931 1366 740 807 2.28796e-009 1.0042e-009 2.16185e-009 9.4885e-010 -3.05509e-007 -1.3409e-007
+````
+
+The first line is metadata describing the next five. The first value on the line is the index of the route the following rays are for. The second value is the amount of rays in that group. In this example, there are 5 rays for index 1 of the route.
+
+The next five lines are descriptions of rays. The first value on each line tells us what type of ray it is, but this is not currently used in the program. The next four values are the positions of the transmitter and receiver. These are xy-coordinate pairs. The next two values (i.e (1043,1619) or (981,1464), positions 6 and 7) are penultimate points, which will not be visible to the user, so they are not used. The next 6 values are complex numbers describing the x, y and z components of the ray at that point.
+
+The values in this file are again seperated by white space.
 
 
 ### Using own Files
